@@ -10,25 +10,19 @@ plugins {
 
 dependencies {
     implementation(kotlin("gradle-plugin-api"))
-    implementation(project(":reflekt-core"))
-    api(project(":reflekt-dsl"))
+    implementation(project(":reflektTask-core"))
     implementation(kotlin("compiler-embeddable"))
 }
 
 publishPlugin {
-    id = "org.jetbrains.reflekt"
-    displayName = "Reflekt"
-    implementationClass = "org.jetbrains.reflekt.plugin.ReflektSubPlugin"
+    id = "org.jetbrains.reflektTask"
+    displayName = "ReflektTask"
+    implementationClass = "org.jetbrains.reflektTask.plugin.ReflektTaskSubPlugin"
     version = project.version.toString()
 
     info {
-        description = "Compile-time reflection library"
-        website = "https://github.com/JetBrains-Research/reflekt"
-        vcsUrl = "https://github.com/JetBrains-Research/reflekt"
-        tags.addAll(listOf("kotlin", "reflection", "reflekt"))
+        description = "Reflekt task"
     }
 }
-
-
 
 publishJar {}

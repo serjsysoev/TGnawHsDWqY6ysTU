@@ -1,4 +1,4 @@
 build
 .idea
 .gradle
-reflekt-log.log
+reflektTask-log.log
