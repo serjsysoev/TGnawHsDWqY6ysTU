@@ -1,9 +1,6 @@
 package org.jetbrains.reflekt.plugin
 
-import org.jetbrains.reflekt.plugin.analysis.ReflektModuleAnalysisExtension
-import org.jetbrains.reflekt.plugin.analysis.models.ir.IrReflektContext
 import org.jetbrains.reflekt.plugin.generation.ir.ReflektIrGenerationExtension
-import org.jetbrains.reflekt.plugin.generation.ir.SmartReflektIrGenerationExtension
 import org.jetbrains.reflekt.plugin.utils.PluginConfig
 import org.jetbrains.reflekt.plugin.utils.Util.log
 import org.jetbrains.reflekt.plugin.utils.Util.messageCollector
@@ -13,9 +10,8 @@ import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.compiler.plugin.ComponentRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
-
-import java.io.File
+import org.jetbrains.kotlin.resolve.extensions.SyntheticResolveExtension
+import org.jetbrains.reflekt.plugin.resolve.ReflektResolveExtension
 
 /**
  * Registers the plugin and applies it to the project.
@@ -35,38 +31,15 @@ class ReflektComponentRegistrar(private val isTestConfiguration: Boolean = false
         configuration: CompilerConfiguration,
     ) {
         val config = PluginConfig(configuration, isTestConfiguration = isTestConfiguration)
-        val reflektContext = IrReflektContext()
-
         configuration.messageCollector.log("PROJECT FILE PATH: ${project.projectFilePath}")
 
-        // This will be called multiple times (for each project module),
-        // since compilation process runs module by module
-        AnalysisHandlerExtension.registerExtension(
-            project,
-            ReflektModuleAnalysisExtension(
-                reflektMetaFilesFromLibraries = config.reflektMetaFilesFromLibraries,
-                toSaveMetadata = config.toSaveMetadata,
-                generationPath = config.outputDir,
-                reflektContext = reflektContext,
-                messageCollector = config.messageCollector,
-                reflektMetaFile = config.reflektMetaFileRelativePath?.let { File(it) },
-            ),
-        )
         IrGenerationExtension.registerExtension(
             project,
-            ReflektIrGenerationExtension(
-                reflektContext = reflektContext,
-                messageCollector = config.messageCollector,
-                toReplaceIr = !config.toSaveMetadata,
-            ),
+            ReflektIrGenerationExtension(messageCollector = config.messageCollector)
         )
-        IrGenerationExtension.registerExtension(
+        SyntheticResolveExtension.registerExtension(
             project,
-            SmartReflektIrGenerationExtension(
-                classpath = config.dependencyJars,
-                reflektContext = reflektContext,
-                messageCollector = config.messageCollector,
-            ),
+            ReflektResolveExtension()
         )
     }
 }
