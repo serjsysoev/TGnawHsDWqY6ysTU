@@ -23,15 +23,20 @@ size (сумму размеров всех полей класса в байта
 
 ### Quickstart
 
-Инструкции для запуска практически в точности повторяют инструкции для Reflekt:
+Чтобы собрать плагин, необходимо исполнить ```./gradlew build```
 
-Вставить в build.gradle.kts
+Затем нужно опубликовать его в локальный maven: ```./gradlew publishToMavenLocal```
+
+Инструкции по использованию практически в точности повторяют инструкции для Reflekt:
+
+Добавить в build.gradle.kts
 
 ```
+import org.jetbrains.reflektTask.plugin.reflektTask
+
 plugins {
     kotlin("jvm") version "1.5.31" apply true
     id("org.jetbrains.reflektTask") version "1.5.31" apply true
-    application
 }
 
 repositories {
